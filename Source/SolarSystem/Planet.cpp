@@ -4,11 +4,10 @@
 
 // Sets default values
 APlanet::APlanet():
-//materialPath(""),
 startY_Offset(0),
 scale(1),
-//orbitDist(0),
-orbitRate(0)
+sunOrbitRate(0),
+selfOrbitRate(0)
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
@@ -23,25 +22,19 @@ orbitRate(0)
     visualSphere = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("VisualRepresentation"));
     visualSphere->SetupAttachment(RootComponent);
     
-//    static ConstructorHelpers::FObjectFinder<UStaticMesh> SphereVisualAsset(TEXT("/Game//Shape_Sphere.Shape_Sphere"));
-    static ConstructorHelpers::FObjectFinder<UStaticMesh> SphereVisualAsset(TEXT("/Game/Shape_Sphere.Shape_Sphere"));
+    static ConstructorHelpers::FObjectFinder<UStaticMesh> SphereVisualAsset(TEXT("/Game/Shapes/Shape_Sphere.Shape_Sphere"));
     if (SphereVisualAsset.Succeeded())
     {
         visualSphere->SetStaticMesh(SphereVisualAsset.Object);
     }
     
-//    static ConstructorHelpers::FObjectFinder<UMaterial> material(TEXT("/Game/M_ColorGrid_LowSpec.M_ColorGrid_LowSpec"));
-//    if (material.Succeeded())
-//    {
-//        visualSphere->SetMaterial(0, material.Object);
-//    }
-    
-    // Setup mobility
     visualSphere->SetMobility(EComponentMobility::Movable);
 
-    // Create movement component and set rotation rate
-    RotatingComponent = CreateDefaultSubobject<URotatingMovementComponent>(TEXT("RotatingComponent"));//this);//,
-    RotatingComponent->SetUpdatedComponent(GetRootComponent());
+    SelfOrbiter = CreateDefaultSubobject<URotatingMovementComponent>(TEXT("SelfOrbiter"));//this);//,
+    SelfOrbiter->SetUpdatedComponent(visualSphere);
+    
+    SunOrbiter = CreateDefaultSubobject<URotatingMovementComponent>(TEXT("SunOrbiter"));//this);//,
+    SunOrbiter->SetUpdatedComponent(GetRootComponent());
     
     ConstructAndBegin();
 }
@@ -52,42 +45,21 @@ void APlanet::BeginPlay()
 	Super::BeginPlay();
 	
     ConstructAndBegin();
-//    SetActorLocation(FVector(0, startY_Offset, 0));
-//    collisionSphere->SetWorldScale3D(FVector(scale));
-//    collisionSphere->SetCollisionProfileName(TEXT("Planet"));
-//
-//    visualSphere->SetWorldScale3D(FVector((scale * 32 / 50)));
-//    visualSphere->SetRelativeLocation(FVector(0, 0, -scale * 32));
-//
-//    RotatingComponent->PivotTranslation = FVector(0, -startY_Offset, 0);
-//    RotatingComponent->RotationRate = FRotator(0, orbitRate, 0);
+
 }
 
 // Called every frame
 void APlanet::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-//    if (GEngine)
-//    {
-//        GEngine->AddOnScreenDebugMessage(4, 1.f, FColor::Blue, FString::Printf(TEXT("Visual radius: %f"), visualSphere->CalcBounds(FTransform()).SphereRadius));
-//        GEngine->AddOnScreenDebugMessage(5, 1.f, FColor::Blue, FString::Printf(TEXT("Visual extent: %f, %f, %f"),
-//                                                                               visualSphere->CalcBounds(FTransform()).BoxExtent.X,
-//                                                                               visualSphere->CalcBounds(FTransform()).BoxExtent.Y,
-//                                                                               visualSphere->CalcBounds(FTransform()).BoxExtent.Z));
-//        GEngine->AddOnScreenDebugMessage(7, 1.f, FColor::Blue, FString::Printf(TEXT("Collision radius: %f"), collisionSphere->CalcBounds(FTransform()).SphereRadius));
-//        GEngine->AddOnScreenDebugMessage(8, 1.f, FColor::Blue, FString::Printf(TEXT("Collision extent: %f, %f, %f"),
-//                                                                               collisionSphere->CalcBounds(FTransform()).BoxExtent.X,
-//                                                                               collisionSphere->CalcBounds(FTransform()).BoxExtent.Y,
-//                                                                               collisionSphere->CalcBounds(FTransform()).BoxExtent.Z));
-//    }
+
 }
 
 void APlanet::ConstructAndBegin()
 {
-    static ConstructorHelpers::FObjectFinder<UMaterial> material(TEXT("/Game/M_ColorGrid_LowSpec.M_ColorGrid_LowSpec"));
-    if (material.Succeeded())
+    if (material)
     {
-        visualSphere->SetMaterial(0, material.Object);
+        visualSphere->SetMaterial(0, material);
     }
     
     SetActorLocation(FVector(0, startY_Offset, 0));
@@ -97,7 +69,8 @@ void APlanet::ConstructAndBegin()
     visualSphere->SetWorldScale3D(FVector((scale * 32 / 50)));
     visualSphere->SetRelativeLocation(FVector(0, 0, -scale * 32));
     
-    RotatingComponent->PivotTranslation = FVector(0, -startY_Offset, 0);
-    RotatingComponent->RotationRate = FRotator(0, orbitRate, 0);
+    SelfOrbiter->RotationRate = FRotator(0, selfOrbitRate, 0);
+    SunOrbiter->PivotTranslation = FVector(0, -startY_Offset, 0);
+    SunOrbiter->RotationRate = FRotator(0, sunOrbitRate, 0);
 }
 

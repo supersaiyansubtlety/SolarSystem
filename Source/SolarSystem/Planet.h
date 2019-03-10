@@ -21,7 +21,8 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
     
-    URotatingMovementComponent* RotatingComponent;
+    URotatingMovementComponent* SunOrbiter;
+    URotatingMovementComponent* SelfOrbiter;
     UStaticMeshComponent* visualSphere;
     
     void ConstructAndBegin();
@@ -39,7 +40,7 @@ public:
 //    UStaticMeshComponent* visualSphere;
     
     UPROPERTY(EditAnywhere, Category = "-Planet")
-    UMaterial* material;
+    UMaterialInterface* material;
     
     UPROPERTY(EditAnywhere, Category = "-Planet")
     float startY_Offset;
@@ -47,7 +48,9 @@ public:
     float scale;
     
     UPROPERTY(EditAnywhere, Category = "-Planet")
-    float orbitRate;
+    float sunOrbitRate;
+    UPROPERTY(EditAnywhere, Category = "-Planet")
+    float selfOrbitRate;
     
     
 
