@@ -1,8 +1,8 @@
-// Fill out your copyright notice in the Description page of Project Settings.
 #pragma once
 #include "CoreMinimal.h"
 #include "Runtime/Engine/Classes/Camera/CameraComponent.h"
 #include "Engine.h"
+#include "Runtime/Engine/Classes/Components/SphereComponent.h"
 #include "GameFramework/Pawn.h"
 #include "Voyager.generated.h"
 
@@ -14,6 +14,9 @@ class SOLARSYSTEM_API AVoyager : public APawn
 public:
 	// Sets default values for this pawn's properties
 	AVoyager();
+
+	UPROPERTY(EditAnywhere)
+	USphereComponent* SphereComponent;
 
 	UPROPERTY(EditAnywhere, Category = "MovementSpeed")
 		float speed;

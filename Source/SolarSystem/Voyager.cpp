@@ -3,6 +3,7 @@
 #include "Voyager.h"
 #include "Runtime/Engine/Classes/GameFramework/PlayerController.h"
 
+
 // Sets default values
 AVoyager::AVoyager()
 {
@@ -10,6 +11,11 @@ AVoyager::AVoyager()
 	PrimaryActorTick.bCanEverTick = true;
 	AutoPossessPlayer = EAutoReceiveInput::Player0;
 	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
+	SphereComponent = CreateDefaultSubobject<USphereComponent>(TEXT("Sphere"));
+	SphereComponent->InitSphereRadius(40.0f);
+	SphereComponent->SetupAttachment(RootComponent);
+	//SphereComponent->SetCollisionEnabled();
+	SphereComponent->SetCollisionProfileName(TEXT("Ship"));
 	RootComponent = Camera;
 	speed = 1000.0f;
 	Alpha = 0.0f;
