@@ -57,7 +57,6 @@ void APlanet::Tick(float DeltaTime)
 
 void APlanet::ConstructAndBegin()
 {
-//    static ConstructorHelpers::FObjectFinder<UMaterial> material(TEXT("/Game/Materials/M_ColorGrid_LowSpec.M_ColorGrid_LowSpec"));
     if (material)
     {
         visualSphere->SetMaterial(0, material);
