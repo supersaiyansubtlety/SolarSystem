@@ -5,7 +5,7 @@
 // Sets default values
 APlanet::APlanet():
 //materialPath(""),
-startPos(0),
+startYOffset(0),
 scale(1),
 //orbitDist(0),
 orbitRate(0)
@@ -42,16 +42,15 @@ void APlanet::BeginPlay()
 {
 	Super::BeginPlay();
 	
-    SetActorLocation(startPos);
+    SetActorLocation(FVector(0, startYOffset, 0));
     collisionSphere->SetWorldScale3D(FVector(scale));
     collisionSphere->SetCollisionProfileName(TEXT("Planet"));
     
     visualSphere->SetWorldScale3D(FVector((scale * 32 / 50)));
     visualSphere->SetRelativeLocation(FVector(0, 0, -scale * 32 / 50));
     
-    
-    RotatingComponent->RotationRate = FRotator(0, 0, orbitRate);
-    RotatingComponent->PivotTranslation = FVector(startPos.Y, 0, 0);
+    RotatingComponent->PivotTranslation = FVector(0, -startYOffset, 0);
+    RotatingComponent->RotationRate = FRotator(0, orbitRate, 0);
 
 //    static ConstructorHelpers::FObjectFinder<UStaticMesh> SphereVisualAsset(TEXT("/Game/StarterContent/Shapes/Shape_Sphere.Shape_Sphere"));
 //    if (SphereVisualAsset.Succeeded())

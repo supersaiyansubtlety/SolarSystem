@@ -42,7 +42,7 @@ public:
 //    UMaterialInstanceDynamic* materialInstance;
     
     UPROPERTY(EditAnywhere, Category = "-Planet")
-    FVector startPos;
+    float startYOffset;
     UPROPERTY(EditAnywhere, Category = "-Planet")
     float scale;
     
