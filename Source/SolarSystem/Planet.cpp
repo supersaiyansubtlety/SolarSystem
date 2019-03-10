@@ -5,7 +5,7 @@
 // Sets default values
 APlanet::APlanet():
 //materialPath(""),
-startYOffset(0),
+startY_Offset(0),
 scale(1),
 //orbitDist(0),
 orbitRate(0)
@@ -23,11 +23,18 @@ orbitRate(0)
     visualSphere = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("VisualRepresentation"));
     visualSphere->SetupAttachment(RootComponent);
     
-    static ConstructorHelpers::FObjectFinder<UStaticMesh> SphereVisualAsset(TEXT("/Game/StarterContent/Shapes/Shape_Sphere.Shape_Sphere"));
+//    static ConstructorHelpers::FObjectFinder<UStaticMesh> SphereVisualAsset(TEXT("/Game//Shape_Sphere.Shape_Sphere"));
+    static ConstructorHelpers::FObjectFinder<UStaticMesh> SphereVisualAsset(TEXT("/Game/Shape_Sphere.Shape_Sphere"));
     if (SphereVisualAsset.Succeeded())
     {
         visualSphere->SetStaticMesh(SphereVisualAsset.Object);
     }
+    
+//    static ConstructorHelpers::FObjectFinder<UMaterial> material(TEXT("/Game/M_ColorGrid_LowSpec.M_ColorGrid_LowSpec"));
+//    if (material.Succeeded())
+//    {
+//        visualSphere->SetMaterial(0, material.Object);
+//    }
     
     // Setup mobility
     visualSphere->SetMobility(EComponentMobility::Movable);
@@ -35,6 +42,8 @@ orbitRate(0)
     // Create movement component and set rotation rate
     RotatingComponent = CreateDefaultSubobject<URotatingMovementComponent>(TEXT("RotatingComponent"));//this);//,
     RotatingComponent->SetUpdatedComponent(GetRootComponent());
+    
+    ConstructAndBegin();
 }
 
 // Called when the game starts or when spawned
@@ -42,28 +51,16 @@ void APlanet::BeginPlay()
 {
 	Super::BeginPlay();
 	
-    SetActorLocation(FVector(0, startYOffset, 0));
-    collisionSphere->SetWorldScale3D(FVector(scale));
-    collisionSphere->SetCollisionProfileName(TEXT("Planet"));
-    
-    visualSphere->SetWorldScale3D(FVector((scale * 32 / 50)));
-    visualSphere->SetRelativeLocation(FVector(0, 0, -scale * 32));
-    
-    RotatingComponent->PivotTranslation = FVector(0, -startYOffset, 0);
-    RotatingComponent->RotationRate = FRotator(0, orbitRate, 0);
-
-//    static ConstructorHelpers::FObjectFinder<UStaticMesh> SphereVisualAsset(TEXT("/Game/StarterContent/Shapes/Shape_Sphere.Shape_Sphere"));
-//    if (SphereVisualAsset.Succeeded())
-//    {
-//        visualSphere->SetStaticMesh(SphereVisualAsset.Object);
-//        visualSphere->SetWorldScale3D(FVector(scale/2));
-//    }
-    
-//    static ConstructorHelpers::FObjectFinder<UMaterial> material(TEXT("/Game/StarterContent/Materials/M_Ground_Moss.M_Ground_Moss"));
-//    if (material.Succeeded())
-//    {
-//        visualSphere->SetMaterial(0, material.Object);
-//    }
+    ConstructAndBegin();
+//    SetActorLocation(FVector(0, startY_Offset, 0));
+//    collisionSphere->SetWorldScale3D(FVector(scale));
+//    collisionSphere->SetCollisionProfileName(TEXT("Planet"));
+//
+//    visualSphere->SetWorldScale3D(FVector((scale * 32 / 50)));
+//    visualSphere->SetRelativeLocation(FVector(0, 0, -scale * 32));
+//
+//    RotatingComponent->PivotTranslation = FVector(0, -startY_Offset, 0);
+//    RotatingComponent->RotationRate = FRotator(0, orbitRate, 0);
 }
 
 // Called every frame
@@ -83,5 +80,24 @@ void APlanet::Tick(float DeltaTime)
 //                                                                               collisionSphere->CalcBounds(FTransform()).BoxExtent.Y,
 //                                                                               collisionSphere->CalcBounds(FTransform()).BoxExtent.Z));
 //    }
+}
+
+void APlanet::ConstructAndBegin()
+{
+    static ConstructorHelpers::FObjectFinder<UMaterial> material(TEXT("/Game/M_ColorGrid_LowSpec.M_ColorGrid_LowSpec"));
+    if (material.Succeeded())
+    {
+        visualSphere->SetMaterial(0, material.Object);
+    }
+    
+    SetActorLocation(FVector(0, startY_Offset, 0));
+    collisionSphere->SetWorldScale3D(FVector(scale));
+    collisionSphere->SetCollisionProfileName(TEXT("Planet"));
+    
+    visualSphere->SetWorldScale3D(FVector((scale * 32 / 50)));
+    visualSphere->SetRelativeLocation(FVector(0, 0, -scale * 32));
+    
+    RotatingComponent->PivotTranslation = FVector(0, -startY_Offset, 0);
+    RotatingComponent->RotationRate = FRotator(0, orbitRate, 0);
 }
 

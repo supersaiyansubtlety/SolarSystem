@@ -20,34 +20,32 @@ public:
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
-
+    
+    URotatingMovementComponent* RotatingComponent;
+    UStaticMeshComponent* visualSphere;
+    
+    void ConstructAndBegin();
+    
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
     
-    UPROPERTY(EditAnywhere, Category = "-Planet")
-    URotatingMovementComponent* RotatingComponent;
-    
-    UPROPERTY(EditAnywhere, Category = "-Planet")
-    USphereComponent* collisionSphere;
-    UPROPERTY(EditAnywhere, Category = "-Planet")
-    UStaticMeshComponent* visualSphere;
+//    UPROPERTY(EditAnywhere, Category = "-Planet")
+//    URotatingMovementComponent* RotatingComponent;
     
 //    UPROPERTY(EditAnywhere, Category = "-Planet")
-//    FString materialPath;
+    USphereComponent* collisionSphere;
+//    UPROPERTY(EditAnywhere, Category = "-Planet")
+//    UStaticMeshComponent* visualSphere;
     
     UPROPERTY(EditAnywhere, Category = "-Planet")
     UMaterial* material;
-//    UPROPERTY(EditAnywhere, Category = "-Planet")
-//    UMaterialInstanceDynamic* materialInstance;
     
     UPROPERTY(EditAnywhere, Category = "-Planet")
-    float startYOffset;
+    float startY_Offset;
     UPROPERTY(EditAnywhere, Category = "-Planet")
     float scale;
     
-//    UPROPERTY(EditAnywhere, Category = "-Planet")
-//    float orbitDist;
     UPROPERTY(EditAnywhere, Category = "-Planet")
     float orbitRate;
     
