@@ -6,5 +6,5 @@
 ASolarSystemGameMode::ASolarSystemGameMode()
 {
 	// set default pawn class to our flying pawn
-	DefaultPawnClass = ASolarSystemPawn::StaticClass();
+	//DefaultPawnClass = ASolarSystemPawn::StaticClass();
 }
