@@ -47,7 +47,7 @@ void APlanet::BeginPlay()
     collisionSphere->SetCollisionProfileName(TEXT("Planet"));
     
     visualSphere->SetWorldScale3D(FVector((scale * 32 / 50)));
-    visualSphere->SetRelativeLocation(FVector(0, 0, -scale * 32 / 50));
+    visualSphere->SetRelativeLocation(FVector(0, 0, -scale * 32));
     
     RotatingComponent->PivotTranslation = FVector(0, -startYOffset, 0);
     RotatingComponent->RotationRate = FRotator(0, orbitRate, 0);
@@ -70,8 +70,8 @@ void APlanet::BeginPlay()
 void APlanet::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-    if (GEngine)
-    {
+//    if (GEngine)
+//    {
 //        GEngine->AddOnScreenDebugMessage(4, 1.f, FColor::Blue, FString::Printf(TEXT("Visual radius: %f"), visualSphere->CalcBounds(FTransform()).SphereRadius));
 //        GEngine->AddOnScreenDebugMessage(5, 1.f, FColor::Blue, FString::Printf(TEXT("Visual extent: %f, %f, %f"),
 //                                                                               visualSphere->CalcBounds(FTransform()).BoxExtent.X,
@@ -82,6 +82,6 @@ void APlanet::Tick(float DeltaTime)
 //                                                                               collisionSphere->CalcBounds(FTransform()).BoxExtent.X,
 //                                                                               collisionSphere->CalcBounds(FTransform()).BoxExtent.Y,
 //                                                                               collisionSphere->CalcBounds(FTransform()).BoxExtent.Z));
-    }
+//    }
 }
 
