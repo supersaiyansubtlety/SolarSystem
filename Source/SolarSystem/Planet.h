@@ -23,6 +23,7 @@ protected:
     
     URotatingMovementComponent* SunOrbiter;
     URotatingMovementComponent* SelfOrbiter;
+    
     UStaticMeshComponent* visualSphere;
     
     void ConstructAndBegin();

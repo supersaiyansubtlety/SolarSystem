@@ -20,6 +20,9 @@ numRevealed(0)
     SphereComponent->InitSphereRadius(40.f);
     SphereComponent->SetCollisionProfileName(TEXT("Player"));
     
+//    PawnMover = CreateDefaultSubobject<UMovementComponent>(TEXT("PawnMover"), true);
+//    PawnMover->SetUpdatedComponent(GetRootComponent());
+    
     OurCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("GameCamera"));
     OurCamera->SetupAttachment(GetRootComponent());
     

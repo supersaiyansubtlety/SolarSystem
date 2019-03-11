@@ -7,6 +7,7 @@
 #include "Camera/CameraComponent.h"
 #include "Components/SphereComponent.h"
 #include "Runtime/Core/Public/Containers/Array.h"
+//#include "GameFramework/MovementComponent.h"
 #include "PawnWithCamera.generated.h"
 
 UCLASS()
@@ -33,6 +34,9 @@ protected:
     //Input variables to store the data we receive from input mappings
     FVector2D MovementInput;
     FVector2D CameraInput;
+    
+//    UMovementComponent* PawnMover;
+    
     UPROPERTY(EditAnywhere, Category = "-Solar Specific")
     float speed;
     //lerp stuff
