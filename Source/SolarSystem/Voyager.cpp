@@ -12,14 +12,16 @@ AVoyager::AVoyager()
 	AutoPossessPlayer = EAutoReceiveInput::Player0;
 	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
 	SphereComponent = CreateDefaultSubobject<USphereComponent>(TEXT("Sphere"));
-	SphereComponent->InitSphereRadius(40.0f);
+	SphereComponent->InitSphereRadius(100.0f);
 	SphereComponent->SetupAttachment(RootComponent);
+	//SphereComponent->SetWorldLocation(FVector(-500, 0, 0));
 	//SphereComponent->SetCollisionEnabled();
 	SphereComponent->SetCollisionProfileName(TEXT("Ship"));
 	RootComponent = Camera;
 	speed = 1000.0f;
 	Alpha = 0.0f;
-	Middle = FRotator(0, 0, 0);
+	finding = false;
+	Middle = FRotator(0, 10, 0);
 	
 
 
@@ -31,6 +33,7 @@ void AVoyager::BeginPlay()
 	Super::BeginPlay();
 	move = false;
 	finding = false;
+	
 
 	
 }
@@ -39,37 +42,11 @@ void AVoyager::BeginPlay()
 void AVoyager::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	finding = false;
-	if (finding == true) {
-
-		if (GetWorld()) {
-			APlayerController *myPlayerController = GetWorld()->GetFirstPlayerController();
-			if (myPlayerController) {
-				this->DisableInput(myPlayerController);
-			}
-			if (GEngine) {
-				GEngine->AddOnScreenDebugMessage(1, 3.0f, FColor::Red, FString::Printf(TEXT("Inputs Disabled")));
-			}
-		}
-
-		Alpha += DeltaTime / 6;
-		Alpha = FMath::Clamp<float>(Alpha, 0.0f, 1.0f);
-		FRotator Lerped = FMath::Lerp(CameraRot, Middle, Alpha);
-		Camera->SetWorldRotation(Lerped);
-
-		if (Alpha == 1) {
-			finding = false;
-			Alpha = 0.0f;
-			if (GetWorld()) {
-				APlayerController *myPlayerController = GetWorld()->GetFirstPlayerController();
-				if (myPlayerController) {
-					this->EnableInput(myPlayerController);
-				}
-				if (GEngine) {
-					GEngine->AddOnScreenDebugMessage(1, 3.0f, FColor::Red, FString::Printf(TEXT("Inputs Enabled")));
-				}
-			}
-		}
+	//finding = false;
+	
+	
+	if (GEngine) {
+		GEngine->AddOnScreenDebugMessage(2, 7.0f, FColor::Red, FString::Printf(TEXT("Finding: %s"), finding ? TEXT("true") : TEXT("false")));
 	}
 
 	FRotator NewRotation = Camera->GetComponentRotation();
@@ -89,6 +66,41 @@ void AVoyager::Tick(float DeltaTime)
 		move = false;
 	}
 
+	if (finding) {
+
+		if (GetWorld()) {
+			APlayerController *myPlayerController = GetWorld()->GetFirstPlayerController();
+			if (myPlayerController) {
+				this->DisableInput(myPlayerController);
+			}
+			if (GEngine) {
+				GEngine->AddOnScreenDebugMessage(1, 3.0f, FColor::Red, FString::Printf(TEXT("Inputs Disabled")));
+			}
+		}
+
+		Alpha += DeltaTime / 6.0f;
+		Alpha = FMath::Clamp<float>(Alpha, 0.0f, 1.0f);
+		FRotator Lerped = FMath::Lerp<FRotator>(CameraRot, Middle, Alpha);
+		Camera->SetWorldRotation(Lerped);
+		if (GEngine) {
+			GEngine->AddOnScreenDebugMessage(3, 7.0f, FColor::Red, FString::Printf(TEXT("Alpha: %f"), Alpha));
+		}
+
+		if (Alpha == 1) {
+			finding = false;
+			//bearing = false;
+			Alpha = 0.0f;
+			if (GetWorld()) {
+				APlayerController *myPlayerController = GetWorld()->GetFirstPlayerController();
+				if (myPlayerController) {
+					this->EnableInput(myPlayerController);
+				}
+				if (GEngine) {
+					GEngine->AddOnScreenDebugMessage(1, 3.0f, FColor::Red, FString::Printf(TEXT("Inputs Enabled")));
+				}
+			}
+		}
+	}
 
 
 
@@ -111,7 +123,10 @@ void AVoyager::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 
 void AVoyager::Bearing(float AxisValue) {
 	CameraRot = Camera->GetComponentRotation();
-	finding = true;
+	finding = AxisValue;
+	if (GEngine) {
+		GEngine->AddOnScreenDebugMessage(4, 7.0f, FColor::Red, FString::Printf(TEXT("Bearing")));
+	}
 	
 }
 
@@ -129,6 +144,9 @@ void AVoyager::YawCamera(float AxisValue)
 void AVoyager::MoveLeft(float AxisValue) {
 	MovementInput.Y = FMath::Clamp<float>(AxisValue, -1.0f, 1.0f);
 	move = true;
+	if (GEngine) {
+		GEngine->AddOnScreenDebugMessage(4, 7.0f, FColor::Red, FString::Printf(TEXT("Moving")));
+	}
 }
 
 void AVoyager::MoveBackward(float AxisValue) {

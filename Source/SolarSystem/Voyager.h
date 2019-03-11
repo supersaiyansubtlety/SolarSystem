@@ -25,6 +25,7 @@ public:
 
 	bool finding;
 	bool move;
+	bool bearing;
 
 	UCameraComponent* Camera;
 
