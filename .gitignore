@@ -4,3 +4,5 @@ Saved/
 Content/StarterContent/
 *.xcworkspace
 .DS_Store
+.vs/
+*.sln

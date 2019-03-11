@@ -1,13 +1,18 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "PawnWithCamera.h"
+#include "Planet.h"
 //#include "MyActorToSpawn.h"
 
 
 // Sets default values
 APawnWithCamera::APawnWithCamera():
 speed(300),
-lerpAlpha(1)
+lerpAlpha(1),
+BearS(6.0f),
+move(false),
+finding(false),
+A2(0.0f)
 {
  	// Set this pawn to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
@@ -16,7 +21,7 @@ lerpAlpha(1)
     //Create collision sphere and make it root
     USphereComponent* SphereComponent = CreateDefaultSubobject<USphereComponent>(TEXT("RootComponent"));
     RootComponent = SphereComponent;
-    SphereComponent->InitSphereRadius(40.f);
+    SphereComponent->InitSphereRadius(40.0f);
     SphereComponent->SetCollisionProfileName(TEXT("Player"));
     
     OurCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("GameCamera"));
@@ -24,7 +29,7 @@ lerpAlpha(1)
     
     //Take control of the default Player
     AutoPossessPlayer = EAutoReceiveInput::Player0;
-
+	OnActorBeginOverlap.AddDynamic(this, &APawnWithCamera::OnOverlap);
 }
 
 // Called when the game starts or when spawned
@@ -41,28 +46,46 @@ void APawnWithCamera::Tick( float DeltaTime )
     
     //Rotate our camera's pitch AND NOW YAW, but limit PITCH so we're always looking downward
     //NOTE: Camera's pitch is changing independent of actor's pitch
-    if (lerpAlpha < 1)
+    if (finding)
     {
         //increment lerpAlpha so it reaches 1 after 5 seconds
-        lerpAlpha += (DeltaTime/6);
+        lerpAlpha += (DeltaTime/BearS);
         //get lerp and set rotation from lerp
         FRotator Lerped = FMath::Lerp(camForwardRot, newCamForwardRot, lerpAlpha);
         Lerped.Roll = 0;
         //GEngine->AddOnScreenDebugMessage(3, 3.f, FColor::Green, FString::Printf(TEXT("newRot: %f, %f, %f"), newRot.Pitch, newRot.Yaw, newRot.Roll));
         OurCamera->SetWorldRotation(Lerped);
+		
         if (!(lerpAlpha < 1))
         {
-            if (GetWorld())
-            {
-                APlayerController* myPlayerController = GetWorld()->GetFirstPlayerController();
-                if (myPlayerController)
-                {
-                    this->EnableInput(myPlayerController);
-                    if (GEngine) { GEngine->AddOnScreenDebugMessage(3, 2.f, FColor::Green, FString::Printf(TEXT("Input enabled!"))); }
-                }
-            }
-        }
+			finding = false;
+			move = true;
+			
+		}
+            
+      
     }
+	else if (move) {
+		A2 += DeltaTime / BearS;
+		A2 = FMath::Clamp<float>(A2, 0.0f, 1.0f);
+		FVector Moved = FMath::Lerp<FVector>(startdist, enddist, A2);
+		OurCamera->SetWorldLocation(Moved);
+		if (GEngine) {
+			GEngine->AddOnScreenDebugMessage(2, 5.0f, FColor::Red, FString::Printf(TEXT("Start Distance from Sun: %s Distance from Sun: %s"), *startdist.ToString(), *enddist.ToString()));
+		}
+		if (!(A2 < 1)) {
+			move = false;
+			A2 = 0.0f;
+			if (GetWorld()) {
+				APlayerController* myPlayerController = GetWorld()->GetFirstPlayerController();
+				if (myPlayerController) {
+					this->EnableInput(myPlayerController);
+					if (GEngine) { GEngine->AddOnScreenDebugMessage(3, 2.f, FColor::Green, FString::Printf(TEXT("Input enabled!"))); }
+				}
+			}
+		}
+	}
+
     else
     {
         if (GetWorld())
@@ -118,6 +141,13 @@ void APawnWithCamera::SetupPlayerInputComponent(class UInputComponent* InputComp
 
 }
 
+void APawnWithCamera::OnOverlap(AActor* Overlapped, AActor* OtherThis) {
+	APlanet* planet = Cast<APlanet>(OtherThis);
+	if (GEngine) {
+		GEngine->AddOnScreenDebugMessage(2, 5.0f, FColor::Red, planet->name);
+	}
+}
+
 //Input functions
 void APawnWithCamera::MoveBackward(float AxisValue)
 {
@@ -142,9 +172,11 @@ void APawnWithCamera::YawCamera(float AxisValue)
 void APawnWithCamera::Bearing()
 {
     if (lerpAlpha < 1) { return; }
+	startdist = OurCamera->GetComponentLocation();
+	enddist = startdist / 2;
     camForwardRot = OurCamera->GetForwardVector().Rotation();
     newCamForwardRot = (-GetActorLocation()).Rotation();
-    
+	finding = true;
     lerpAlpha = 0;
   
     if (GetWorld())

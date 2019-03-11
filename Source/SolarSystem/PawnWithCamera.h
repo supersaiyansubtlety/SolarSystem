@@ -1,10 +1,10 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
-
 #include "CoreMinimal.h"
 #include "GameFramework/Pawn.h"
 #include "Camera/CameraComponent.h"
+#include "Engine.h"
 #include "Components/SphereComponent.h"
 #include "PawnWithCamera.generated.h"
 
@@ -25,6 +25,9 @@ public:
 
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* InputComponent) override;
+	
+	UFUNCTION()
+	void OnOverlap(AActor* Overlapped, AActor* OtherThis);
     
 protected:
     UCameraComponent* OurCamera;
@@ -34,8 +37,16 @@ protected:
     FVector2D CameraInput;
     UPROPERTY(EditAnywhere, Category = "-Movement")
     float speed;
+	UPROPERTY(EditAnywhere, Category = "BearingSpeed")
+	float BearS;
     //lerp stuff
     float lerpAlpha;
+	float A2;
+	float TimeToFB;
+	bool move;
+	bool finding;
+	FVector startdist;
+	FVector enddist;
     FVector spawnLoc;
     FVector spawnOffset;
     FRotator camForwardRot;
@@ -48,5 +59,7 @@ protected:
     void PitchCamera(float AxisValue);
     void YawCamera(float AxisValue);
     void Bearing();
+
+	
 	
 };
