@@ -54,6 +54,8 @@ public:
     float sunOrbitRate;
     UPROPERTY(EditAnywhere, Category = "-Planet")
     float selfOrbitRate;
+
+	FString name;
     
     
 

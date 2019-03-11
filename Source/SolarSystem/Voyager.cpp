@@ -1,6 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "Voyager.h"
+#include "Planet.h"
 #include "Runtime/Engine/Classes/GameFramework/PlayerController.h"
 
 
@@ -21,6 +22,8 @@ AVoyager::AVoyager()
 	A2 = 0.0f;
 	finding = false;
 	Middle = FRotator(0, 15, 0);
+
+	OnActorBeginOverlap.AddDynamic(this, &AVoyager::OnOverlap);
 	
 
 
@@ -131,6 +134,18 @@ void AVoyager::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 	InputComponent->BindAxis("Bearing", this, &AVoyager::Bearing);
 
 
+}
+
+void AVoyager::OnOverlap(AActor* OverlappedActor, AActor* OtherActor){
+	if (OtherActor && this == OtherActor) {
+		return;
+	}
+
+	APlanet* planet = Cast<APlanet>(OtherActor);
+	
+	if (GEngine) {
+		GEngine->AddOnScreenDebugMessage(5, 5.0f, FColor::Blue, planet->name);
+	}
 }
 
 void AVoyager::Bearing(float AxisValue) {
