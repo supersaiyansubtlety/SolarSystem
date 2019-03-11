@@ -14,14 +14,13 @@ AVoyager::AVoyager()
 	SphereComponent = CreateDefaultSubobject<USphereComponent>(TEXT("Sphere"));
 	SphereComponent->InitSphereRadius(100.0f);
 	SphereComponent->SetupAttachment(RootComponent);
-	//SphereComponent->SetWorldLocation(FVector(-500, 0, 0));
-	//SphereComponent->SetCollisionEnabled();
 	SphereComponent->SetCollisionProfileName(TEXT("Ship"));
 	RootComponent = Camera;
 	speed = 1000.0f;
 	Alpha = 0.0f;
+	A2 = 0.0f;
 	finding = false;
-	Middle = FRotator(0, 10, 0);
+	Middle = FRotator(0, 15, 0);
 	
 
 
@@ -33,6 +32,7 @@ void AVoyager::BeginPlay()
 	Super::BeginPlay();
 	move = false;
 	finding = false;
+	moving = false;
 	
 
 	
@@ -80,16 +80,30 @@ void AVoyager::Tick(float DeltaTime)
 
 		Alpha += DeltaTime / 6.0f;
 		Alpha = FMath::Clamp<float>(Alpha, 0.0f, 1.0f);
-		FRotator Lerped = FMath::Lerp<FRotator>(CameraRot, Middle, Alpha);
-		Camera->SetWorldRotation(Lerped);
+		//FRotator Lerped = FMath::Lerp<FRotator>(CameraRot, Middle, Alpha);
+		FVector Moved = FMath::Lerp<FVector>(distFS, (distFS / 2), Alpha);
+		Camera->SetWorldLocation(Moved);
+		//look = Lerped;
+		//Camera->SetWorldRotation(Lerped);
 		if (GEngine) {
 			GEngine->AddOnScreenDebugMessage(3, 7.0f, FColor::Red, FString::Printf(TEXT("Alpha: %f"), Alpha));
 		}
 
 		if (Alpha == 1) {
 			finding = false;
-			//bearing = false;
+			moving = true;
 			Alpha = 0.0f;
+			
+		}
+	}
+	if (moving) {
+		A2 += DeltaTime / 6.0f;
+		A2 = FMath::Clamp<float>(A2, 0.0f, 1.0f);
+		FRotator Lerped = FMath::Lerp<FRotator>(CameraRot, look, A2);
+		Camera->SetWorldRotation(Lerped);
+		if (A2 == 1) {
+			moving = false;
+			A2 = 0.0f;
 			if (GetWorld()) {
 				APlayerController *myPlayerController = GetWorld()->GetFirstPlayerController();
 				if (myPlayerController) {
@@ -101,7 +115,6 @@ void AVoyager::Tick(float DeltaTime)
 			}
 		}
 	}
-
 
 
 }
@@ -124,6 +137,10 @@ void AVoyager::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 void AVoyager::Bearing(float AxisValue) {
 	CameraRot = Camera->GetComponentRotation();
 	finding = AxisValue;
+	if (AxisValue == 1) {
+		distFS = Camera->GetComponentLocation();
+		look = (FVector(0, 0, 0) - distFS).Rotation();
+	}
 	if (GEngine) {
 		GEngine->AddOnScreenDebugMessage(4, 7.0f, FColor::Red, FString::Printf(TEXT("Bearing")));
 	}

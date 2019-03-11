@@ -22,10 +22,14 @@ public:
 		float speed;
 
 	float Alpha;
+	float A2;
+	
 
 	bool finding;
 	bool move;
+	bool moving;
 	bool bearing;
+	
 
 	UCameraComponent* Camera;
 
@@ -35,6 +39,8 @@ public:
 	FVector CameraLoc;
 	FRotator Middle;
 	FRotator CameraRot;
+	FVector distFS;
+	FRotator look;
 
 	void Bearing(float AxixValue);
 	void MoveRight(float AxisValue);
