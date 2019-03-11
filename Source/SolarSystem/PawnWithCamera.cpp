@@ -1,13 +1,18 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "PawnWithCamera.h"
+#include "Planet.h"
 //#include "MyActorToSpawn.h"
 
 
 // Sets default values
 APawnWithCamera::APawnWithCamera():
 speed(300),
+BearS(6.0f),
 lerpAlpha(1),
+A2(0.0f),
+move(false),
+finding(false),
 numRevealed(0)
 {
  	// Set this pawn to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
@@ -17,18 +22,15 @@ numRevealed(0)
     //Create collision sphere and make it root
     USphereComponent* SphereComponent = CreateDefaultSubobject<USphereComponent>(TEXT("RootComponent"));
     RootComponent = SphereComponent;
-    SphereComponent->InitSphereRadius(40.f);
+    SphereComponent->InitSphereRadius(40.0f);
     SphereComponent->SetCollisionProfileName(TEXT("Player"));
-    
-//    PawnMover = CreateDefaultSubobject<UMovementComponent>(TEXT("PawnMover"), true);
-//    PawnMover->SetUpdatedComponent(GetRootComponent());
     
     OurCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("GameCamera"));
     OurCamera->SetupAttachment(GetRootComponent());
     
     //Take control of the default Player
     AutoPossessPlayer = EAutoReceiveInput::Player0;
-
+	OnActorBeginOverlap.AddDynamic(this, &APawnWithCamera::OnOverlap);
 }
 
 // Called when the game starts or when spawned
@@ -45,28 +47,46 @@ void APawnWithCamera::Tick( float DeltaTime )
     
     //Rotate our camera's pitch AND NOW YAW, but limit PITCH so we're always looking downward
     //NOTE: Camera's pitch is changing independent of actor's pitch
-    if (lerpAlpha < 1)
+    if (finding)
     {
         //increment lerpAlpha so it reaches 1 after 5 seconds
-        lerpAlpha += (DeltaTime/6);
+        lerpAlpha += (DeltaTime/BearS);
         //get lerp and set rotation from lerp
         FRotator Lerped = FMath::Lerp(camForwardRot, newCamForwardRot, lerpAlpha);
         Lerped.Roll = 0;
         //GEngine->AddOnScreenDebugMessage(3, 3.f, FColor::Green, FString::Printf(TEXT("newRot: %f, %f, %f"), newRot.Pitch, newRot.Yaw, newRot.Roll));
         OurCamera->SetWorldRotation(Lerped);
+		
         if (!(lerpAlpha < 1))
         {
-            if (GetWorld())
-            {
-                APlayerController* myPlayerController = GetWorld()->GetFirstPlayerController();
-                if (myPlayerController)
-                {
-                    this->EnableInput(myPlayerController);
-                    if (GEngine) { GEngine->AddOnScreenDebugMessage(3, 2.f, FColor::Green, FString::Printf(TEXT("Input enabled!"))); }
-                }
-            }
-        }
+			finding = false;
+			move = true;
+			
+		}
+            
+      
     }
+	else if (move) {
+		A2 += DeltaTime / BearS;
+		A2 = FMath::Clamp<float>(A2, 0.0f, 1.0f);
+		FVector Moved = FMath::Lerp<FVector>(startdist, enddist, A2);
+		OurCamera->SetWorldLocation(Moved);
+		if (GEngine) {
+			GEngine->AddOnScreenDebugMessage(2, 5.0f, FColor::Red, FString::Printf(TEXT("Start Distance from Sun: %s Distance from Sun: %s"), *startdist.ToString(), *enddist.ToString()));
+		}
+		if (!(A2 < 1)) {
+			move = false;
+			A2 = 0.0f;
+			if (GetWorld()) {
+				APlayerController* myPlayerController = GetWorld()->GetFirstPlayerController();
+				if (myPlayerController) {
+					this->EnableInput(myPlayerController);
+					if (GEngine) { GEngine->AddOnScreenDebugMessage(3, 2.f, FColor::Green, FString::Printf(TEXT("Input enabled!"))); }
+				}
+			}
+		}
+	}
+
     else
     {
         if (GetWorld())
@@ -110,6 +130,7 @@ void APawnWithCamera::SetupPlayerInputComponent(class UInputComponent* InputComp
 	Super::SetupPlayerInputComponent(InputComponent);
     
     //Hook up events for "ZoomIn"
+    //InputComponent->BindAction("ZoomIn", IE_Released, this, &APawnWithCamera::ZoomOut);
     
     //Hook up every-frame handling for our four axes
     InputComponent->BindAxis("ForwardandBack", this, &APawnWithCamera::MoveBackward);
@@ -118,6 +139,16 @@ void APawnWithCamera::SetupPlayerInputComponent(class UInputComponent* InputComp
     InputComponent->BindAxis("CameraYaw", this, &APawnWithCamera::YawCamera);
     InputComponent->BindAction("Bearing", IE_Pressed, this, &APawnWithCamera::Bearing);
     InputComponent->BindAction("RevealActor", IE_Pressed, this, &APawnWithCamera::RevealActor);
+
+
+
+}
+
+void APawnWithCamera::OnOverlap(AActor* Overlapped, AActor* OtherThis) {
+	APlanet* planet = Cast<APlanet>(OtherThis);
+	if (GEngine) {
+		GEngine->AddOnScreenDebugMessage(2, 5.0f, FColor::Red, planet->name);
+	}
 }
 
 //Input functions
@@ -144,9 +175,11 @@ void APawnWithCamera::YawCamera(float AxisValue)
 void APawnWithCamera::Bearing()
 {
     if (lerpAlpha < 1) { return; }
+	startdist = OurCamera->GetComponentLocation();
+	enddist = startdist / 2;
     camForwardRot = OurCamera->GetForwardVector().Rotation();
     newCamForwardRot = (-GetActorLocation()).Rotation();
-    
+	finding = true;
     lerpAlpha = 0;
   
     if (GetWorld())
