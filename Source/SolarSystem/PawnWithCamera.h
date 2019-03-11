@@ -6,6 +6,7 @@
 #include "GameFramework/Pawn.h"
 #include "Camera/CameraComponent.h"
 #include "Components/SphereComponent.h"
+#include "Runtime/Core/Public/Containers/Array.h"
 #include "PawnWithCamera.generated.h"
 
 UCLASS()
@@ -32,14 +33,17 @@ protected:
     //Input variables to store the data we receive from input mappings
     FVector2D MovementInput;
     FVector2D CameraInput;
-    UPROPERTY(EditAnywhere, Category = "-Movement")
+    UPROPERTY(EditAnywhere, Category = "-Solar Specific")
     float speed;
     //lerp stuff
     float lerpAlpha;
-    FVector spawnLoc;
-    FVector spawnOffset;
     FRotator camForwardRot;
     FRotator newCamForwardRot;
+    
+    UPROPERTY(EditAnywhere, Category = "-Solar Specific")
+    TArray<AActor*> actorsToReveal;
+    int32 numRevealed;
+    void RevealActor();
 
     
     //Input functions

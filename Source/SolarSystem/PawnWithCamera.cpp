@@ -7,7 +7,8 @@
 // Sets default values
 APawnWithCamera::APawnWithCamera():
 speed(300),
-lerpAlpha(1)
+lerpAlpha(1),
+numRevealed(0)
 {
  	// Set this pawn to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
@@ -106,7 +107,6 @@ void APawnWithCamera::SetupPlayerInputComponent(class UInputComponent* InputComp
 	Super::SetupPlayerInputComponent(InputComponent);
     
     //Hook up events for "ZoomIn"
-    //InputComponent->BindAction("ZoomIn", IE_Released, this, &APawnWithCamera::ZoomOut);
     
     //Hook up every-frame handling for our four axes
     InputComponent->BindAxis("ForwardandBack", this, &APawnWithCamera::MoveBackward);
@@ -114,8 +114,7 @@ void APawnWithCamera::SetupPlayerInputComponent(class UInputComponent* InputComp
     InputComponent->BindAxis("CameraPitch", this, &APawnWithCamera::PitchCamera);
     InputComponent->BindAxis("CameraYaw", this, &APawnWithCamera::YawCamera);
     InputComponent->BindAction("Bearing", IE_Pressed, this, &APawnWithCamera::Bearing);
-
-
+    InputComponent->BindAction("RevealActor", IE_Pressed, this, &APawnWithCamera::RevealActor);
 }
 
 //Input functions
@@ -158,5 +157,14 @@ void APawnWithCamera::Bearing()
                 GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, FString::Printf(TEXT("Input disabled!")));
             }
         }
+    }
+}
+
+void APawnWithCamera::RevealActor()
+{
+    if (numRevealed < actorsToReveal.Num())
+    {
+        actorsToReveal[numRevealed]->SetActorHiddenInGame(false);
+        numRevealed++;
     }
 }

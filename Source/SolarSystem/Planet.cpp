@@ -13,6 +13,7 @@ selfOrbitRate(0)
 	PrimaryActorTick.bCanEverTick = true;
     
     RootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("RootComponent"));
+    SetActorHiddenInGame(true);
     
     collisionSphere = CreateDefaultSubobject<USphereComponent>(TEXT("collisionSphere"));
     collisionSphere->SetupAttachment(RootComponent);
