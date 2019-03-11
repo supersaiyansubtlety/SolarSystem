@@ -22,9 +22,10 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
     
-	URotatingMovementComponent* SunOrbiter;
-	URotatingMovementComponent* SelfOrbiter;
-	UStaticMeshComponent* visualSphere;
+
+    URotatingMovementComponent* SunOrbiter;
+    URotatingMovementComponent* SelfOrbiter;
+    UStaticMeshComponent* visualSphere;
 
     
     void ConstructAndBegin();
