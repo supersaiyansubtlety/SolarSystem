@@ -23,6 +23,9 @@ public:
 
 	float Alpha;
 	float A2;
+
+	UPROPERTY(EditAnywhere, Category="BearingTime")
+	float TimeToFB;
 	
 
 	bool finding;
