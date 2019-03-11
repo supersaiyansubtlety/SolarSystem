@@ -81,8 +81,8 @@ void AVoyager::Tick(float DeltaTime)
 		Alpha += DeltaTime / 6.0f;
 		Alpha = FMath::Clamp<float>(Alpha, 0.0f, 1.0f);
 		//FRotator Lerped = FMath::Lerp<FRotator>(CameraRot, Middle, Alpha);
-		FVector Moved = FMath::Lerp<FVector>(distFS, (distFS / 2), Alpha);
-		Camera->SetWorldLocation(Moved);
+		FRotator Lerped = FMath::Lerp<FRotator>(CameraRot, look, Alpha);
+		Camera->SetWorldRotation(Lerped);
 		//look = Lerped;
 		//Camera->SetWorldRotation(Lerped);
 		if (GEngine) {
@@ -93,14 +93,13 @@ void AVoyager::Tick(float DeltaTime)
 			finding = false;
 			moving = true;
 			Alpha = 0.0f;
-			
 		}
 	}
 	if (moving) {
 		A2 += DeltaTime / 6.0f;
 		A2 = FMath::Clamp<float>(A2, 0.0f, 1.0f);
-		FRotator Lerped = FMath::Lerp<FRotator>(CameraRot, look, A2);
-		Camera->SetWorldRotation(Lerped);
+		FVector Moved = FMath::Lerp<FVector>(distFS, (distFS / 2), A2);
+		Camera->SetWorldLocation(Moved);
 		if (A2 == 1) {
 			moving = false;
 			A2 = 0.0f;
