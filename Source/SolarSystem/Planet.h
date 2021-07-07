@@ -17,13 +17,16 @@ public:
 	// Sets default values for this actor's properties
 	APlanet();
 
+	
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
     
+
     URotatingMovementComponent* SunOrbiter;
     URotatingMovementComponent* SelfOrbiter;
     UStaticMeshComponent* visualSphere;
+
     
     void ConstructAndBegin();
     
@@ -51,6 +54,8 @@ public:
     float sunOrbitRate;
     UPROPERTY(EditAnywhere, Category = "-Planet")
     float selfOrbitRate;
+
+	FString name;
     
     
 

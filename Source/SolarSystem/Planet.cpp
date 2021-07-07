@@ -72,5 +72,7 @@ void APlanet::ConstructAndBegin()
     SelfOrbiter->RotationRate = FRotator(0, selfOrbitRate, 0);
     SunOrbiter->PivotTranslation = FVector(0, -startY_Offset, 0);
     SunOrbiter->RotationRate = FRotator(0, sunOrbitRate, 0);
+
+	name = "some name";
 }
 

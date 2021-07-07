@@ -22,24 +22,34 @@ public:
 		float speed;
 
 	float Alpha;
+	float A2;
+
+	UPROPERTY(EditAnywhere, Category="BearingTime")
+	float TimeToFB;
+	
 
 	bool finding;
 	bool move;
+	bool moving;
 	bool bearing;
+	
 
 	UCameraComponent* Camera;
 
 	FVector2D MovementInput;
 	FVector2D CameraInput;
-	//FVector NewLocation;
 	FVector CameraLoc;
 	FRotator Middle;
 	FRotator CameraRot;
+	FVector distFS;
+	FRotator look;
+
+	UFUNCTION()
+	void OnOverlap(AActor* OverlappedActor, AActor* OtherActor);
+
 
 	void Bearing(float AxixValue);
-	void MoveRight(float AxisValue);
 	void MoveLeft(float AxisValue);
-	void MoveForward(float AxisValue);
 	void MoveBackward(float AxisValue);
 	void YawCamera(float AxisValue);
 	void PitchCamera(float AxisValue);
